@@ -49,3 +49,9 @@ resource "aws_cloudfront_origin_access_control" "cdn-oac" {
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
+
+resource "aws_ssm_parameter" "name" {
+  name = "/${var.project_name}/${var.env}/cloudfront/cdn_id"
+  type = "String"
+  value = aws_cloudfront_distribution.frontend-cdn.id
+}
