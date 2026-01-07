@@ -1,18 +1,18 @@
 resource "aws_cloudfront_distribution" "frontend-cdn" {
   origin {
-    domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
-    origin_id   = "s3-${aws_s3_bucket.frontend.bucket}"
+    domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
+    origin_id                = "s3-${aws_s3_bucket.frontend.bucket}"
     origin_access_control_id = aws_cloudfront_origin_access_control.cdn-oac.id
   }
-  
+
 
   enabled             = true
   default_root_object = "index.html"
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "s3-${aws_s3_bucket.frontend.bucket}"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "s3-${aws_s3_bucket.frontend.bucket}"
     viewer_protocol_policy = "redirect-to-https"
 
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # AWS Managed CachingOptimized
@@ -30,9 +30,9 @@ resource "aws_cloudfront_distribution" "frontend-cdn" {
   }
 
   custom_error_response {
-    error_code = 404
-    response_code = 200
-    response_page_path = "/index.html"
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/index.html"
     error_caching_min_ttl = 0
   }
 
@@ -51,7 +51,7 @@ resource "aws_cloudfront_origin_access_control" "cdn-oac" {
 }
 
 resource "aws_ssm_parameter" "name" {
-  name = "/${var.project_name}/${var.env}/cloudfront/cdn_id"
-  type = "String"
+  name  = "/${var.project_name}/${var.env}/cloudfront/cdn_id"
+  type  = "String"
   value = aws_cloudfront_distribution.frontend-cdn.id
 }
