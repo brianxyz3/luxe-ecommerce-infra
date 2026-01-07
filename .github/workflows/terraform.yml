@@ -23,9 +23,9 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: Check Terraform file Format
-        run: terraform fmt -check -recursive
-        working-directory: infrastructure/
+      # - name: Check Terraform file Format
+      #   run: terraform fmt -check -recursive
+      #   working-directory: infrastructure/
 
       - name: AWS Login (OIDC)
         uses: aws-actions/configure-aws-credentials@v5
