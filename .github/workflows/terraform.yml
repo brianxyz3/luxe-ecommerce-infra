@@ -3,6 +3,7 @@ name: Luxe-ecommerce terraform CI/CD
 on:
   push:
     branches: [ "main" ]
+    paths-ignore: [ "*.md", "infrastructure/.gitignore", ".github/*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -36,3 +37,19 @@ jobs:
       - name: Verify identity test
         run: aws sts get-caller-identity
         
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: infrastructure/
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: infrastructure/
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: infrastructure/
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
+        working-directory: infrastructure/
