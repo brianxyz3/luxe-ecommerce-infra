@@ -3,7 +3,7 @@ name: Luxe-ecommerce terraform CI/CD
 on:
   push:
     branches: [ "main" ]
-    paths-ignore: [ "*.md", "infrastructure/.gitignore", ".github/*" ]
+    paths-ignore: [ "*.md", "infrastructure/.gitignore", ".github/**" ]
   pull_request:
     branches: [ "main" ]
 
