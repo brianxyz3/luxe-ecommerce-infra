@@ -1,12 +1,3 @@
-# terraform {
-#   required_providers {
-#     aws = {
-#       source  = "hashicorp/aws"
-#       version = "~> 5.0"
-#     }
-#   }
-# }
-
 module "aws_frontend" {
   source    = "./modules/aws/frontend"
   providers = { aws = aws.aws }
@@ -14,40 +5,47 @@ module "aws_frontend" {
 
   project_name = var.project_name
   env          = var.environment
+  waf_arn      = module.aws_security[0].cloudfront_waf_arn
 }
 
-# module "aws_backend" {
-#   source    = "./modules/aws/backend"
-#   providers = { aws = aws.aws }
-#   count     = var.cloud_provider == "aws" ? 1 : 0
+module "aws_backend" {
+  source    = "./modules/aws/backend"
+  providers = { aws = aws.aws }
+  count     = var.cloud_provider == "aws" ? 1 : 0
 
-#   project_name    = var.project_name
-#   container_image = var.backend_container_image
-#   container_port  = var.backend_container_port
-#   env             = var.environment
-#   vpc_id = module.aws_network[0].vpc_id
-#   subnet_ids = module.aws_network[0].subnet_ids
-#   ecs_sg_id = module.aws_security[0].ecs_sg_id
-#   alb_arn = module.aws_network[0].vpc_arn
-#   region          = "us-east-1"
-# }
+  project_name   = var.project_name
+  container_port = var.backend_container_port
+  env            = var.environment
+  vpc_id         = module.aws_network[0].vpc_id
+  subnet_ids     = module.aws_network[0].priv_subnet_ids
+  ecs_sg_id      = module.aws_security[0].ecs_sg_id
+  tg_arn         = module.aws_network[0].tg_arn
+  exec_role      = module.aws_security[0].exec_role_arn
+  ecs_services   = var.backend-services
+  region         = var.aws_region
 
-# module "aws_network" {
-#   source = "./modules/aws/network"
-#   providers = { aws = aws.aws }
-#   count = var.cloud_provider == "aws" ? 1 : 0
+  depends_on = [module.aws_network]
+}
 
-#   project_name = var.project_name
-#   env = var.environment
-#   alb_sg_id = module.aws_security[0].alb_sg_id
-#   region = "us-east-1"
-# }
+module "aws_network" {
+  source    = "./modules/aws/network"
+  providers = { aws = aws.aws }
+  count     = var.cloud_provider == "aws" ? 1 : 0
 
-# module "aws_security" {
-#   source = "./modules/aws/security"
-#   providers = { aws = aws.aws }
-#   count = var.cloud_provider == "aws" ? 1 : 0
+  project_name = var.project_name
+  env          = var.environment
+  alb_sg_id    = module.aws_security[0].alb_sg_id
+  region       = var.aws_region
+  ecs_services = var.backend-services
+}
 
-#   project_name = var.project_name
-#   vpc_id = module.aws_network[0].vpc_id
-# }
+module "aws_security" {
+  source    = "./modules/aws/security"
+  providers = { aws = aws.aws }
+  count     = var.cloud_provider == "aws" ? 1 : 0
+
+  project_name = var.project_name
+  vpc_id       = module.aws_network[0].vpc_id
+  region       = var.aws_region
+  alb_arn      = module.aws_network[0].alb_arn
+}

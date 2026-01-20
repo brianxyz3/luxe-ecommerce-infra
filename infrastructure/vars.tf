@@ -15,11 +15,10 @@ variable "project_name" {
   description = "Project name for resource naming"
 }
 
-
-variable "backend_container_image" {
+variable "aws_region" {
   type        = string
-  default     = "luxe-ecommerce"
-  description = "Docker image for the backend container"
+  default     = "eu-west-1"
+  description = "Project region for provisioning resources"
 }
 
 
@@ -34,4 +33,15 @@ variable "environment" {
   type        = string
   default     = "prod"
   description = "Environment name"
+}
+
+variable "backend-services" {
+  type = map(object({
+    path = string
+  }))
+  default = {
+    gateway = { path = "/api/gateway/*" },
+    user    = { path = "/api/users/*" },
+    product = { path = "/api/products/*" }
+  }
 }
