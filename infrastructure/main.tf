@@ -1,7 +1,7 @@
 module "aws_frontend" {
-  source    = "./modules/aws/frontend"
-  providers = { aws = aws.aws }
-  count     = var.cloud_provider == "aws" ? 1 : 0
+  source = "./modules/aws/frontend"
+  # providers = { aws = aws.aws }
+  count = var.cloud_provider == "aws" ? 1 : 0
 
   project_name = var.project_name
   env          = var.environment
@@ -9,9 +9,9 @@ module "aws_frontend" {
 }
 
 module "aws_backend" {
-  source    = "./modules/aws/backend"
-  providers = { aws = aws.aws }
-  count     = var.cloud_provider == "aws" ? 1 : 0
+  source = "./modules/aws/backend"
+  # providers = { aws = aws.aws }
+  count = var.cloud_provider == "aws" ? 1 : 0
 
   project_name   = var.project_name
   container_port = var.backend_container_port
@@ -28,9 +28,9 @@ module "aws_backend" {
 }
 
 module "aws_network" {
-  source    = "./modules/aws/network"
-  providers = { aws = aws.aws }
-  count     = var.cloud_provider == "aws" ? 1 : 0
+  source = "./modules/aws/network"
+  # providers = { aws = aws.aws }
+  count = var.cloud_provider == "aws" ? 1 : 0
 
   project_name = var.project_name
   env          = var.environment
@@ -40,9 +40,9 @@ module "aws_network" {
 }
 
 module "aws_security" {
-  source    = "./modules/aws/security"
-  providers = { aws = aws.aws }
-  count     = var.cloud_provider == "aws" ? 1 : 0
+  source = "./modules/aws/security"
+  # providers = { aws = aws.aws }
+  count = var.cloud_provider == "aws" ? 1 : 0
 
   project_name = var.project_name
   vpc_id       = module.aws_network[0].vpc_id
