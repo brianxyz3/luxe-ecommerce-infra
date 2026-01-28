@@ -109,11 +109,11 @@ AWS VPC and networking components
 
 <h2>Data Flow Diagram</h2>
 
-<img src="./documetation/images/data-flow.png" />
+<img src="./documentation/images/data-flow.png" />
 
 <h2>Network Diagram<h2>
 
-<img src="./documetation/images/network-diagram.png" />
+<img src="./documentation/images/network-diagram.png" />
 
 <h3>🚀 Key Features & Highlights</h3>
 
@@ -129,17 +129,17 @@ Layered security using AWS WAF
 
 Fully automated infrastructure provisioning with Terraform
 
-<h2>Infrastructure CI/CD Flow Diagram</h2>
+<h3>Infrastructure CI/CD Flow Diagram</h3>
 
-<img src="./documetation/images/infra-cicd-flow.png">
+<img src="./documentation/images/infra-cicd-flow.png">
 
-<h2>Frontend CI/CD Flow Diagram</h2>
+<h3>Frontend CI/CD Flow Diagram</h3>
 
-<img src="./documetation/images/frontend-cicd.png">
+<img src="./documentation/images/frontend-cicd.png">
 
-<h2>Backend CI/CD Flow Diagram</h2>
+<h3>Backend CI/CD Flow Diagram</h3>
 
-<img src="./documetation/images/backend-cicd.png">
+<img src="./documentation/images/backend-cicd.png">
 
 <h2>📈 Future Improvements</h2>
 
