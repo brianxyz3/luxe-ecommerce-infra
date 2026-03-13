@@ -6,6 +6,7 @@ module "aws_frontend" {
   project_name = var.project_name
   env          = var.environment
   waf_arn      = module.aws_security[0].cloudfront_waf_arn
+  logs_bucket_regional_domain_name = module.aws_security[0].log_bucket_regional_name
 }
 
 module "aws_backend" {
@@ -27,6 +28,15 @@ module "aws_backend" {
   depends_on = [module.aws_network]
 }
 
+module "aws_db" {
+  source = "./modules/aws/storage"
+  count = var.cloud_provider == "aws" ? 1 : 0
+
+  project_name = var.project_name
+  subnet_ids   = module.aws_network[0].db_subnet_ids
+  rds_sg_id    = module.aws_security[0].rds_sg_id
+}
+
 module "aws_network" {
   source = "./modules/aws/network"
   # providers = { aws = aws.aws }
@@ -37,6 +47,7 @@ module "aws_network" {
   alb_sg_id    = module.aws_security[0].alb_sg_id
   region       = var.aws_region
   ecs_services = var.backend-services
+  logs_bucket = module.aws_security[0].log_bucket
 }
 
 module "aws_security" {
@@ -47,5 +58,6 @@ module "aws_security" {
   project_name = var.project_name
   vpc_id       = module.aws_network[0].vpc_id
   region       = var.aws_region
+  env          = var.environment
   alb_arn      = module.aws_network[0].alb_arn
 }
