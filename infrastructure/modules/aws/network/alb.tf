@@ -7,6 +7,11 @@ resource "aws_alb" "alb" {
   idle_timeout               = 300
   drop_invalid_header_fields = true # Drop invalid headers to prevent HTTP desync attacks
 
+  access_logs {
+    bucket  = var.logs_bucket
+    prefix  = "${var.project_name}/alb/"
+    enabled = true
+  }
 
   tags = {
     Name = "${var.project_name}-alb"

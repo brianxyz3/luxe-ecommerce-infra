@@ -18,7 +18,7 @@ resource "aws_internet_gateway" "igw" {
 
 
 resource "aws_subnet" "public-subnets" {
-  count                   = 2
+  count                   = var.subnet_count
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = "10.10.${count.index}.0/24"
   map_public_ip_on_launch = true
@@ -30,13 +30,28 @@ resource "aws_subnet" "public-subnets" {
 }
 
 resource "aws_subnet" "private-subnets" {
-  count             = 2
+  count             = var.subnet_count
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.10.${count.index + 10}.0/24"
   availability_zone = "${var.region}${count.index % 2 == 0 ? "a" : "b"}"
+  
+  map_public_ip_on_launch = true # DELETE AFTER TESTING
+
 
   tags = {
     Name = "${var.project_name}-private-subnet-${count.index + 1}-${count.index % 2 == 0 ? "a" : "b"}"
+  }
+}
+
+resource "aws_subnet" "db-subnets" {
+  count             = var.subnet_count
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.10.${count.index + 20}.0/24"
+  availability_zone = "${var.region}${count.index % 2 == 0 ? "a" : "b"}"
+  
+
+  tags = {
+    Name = "${var.project_name}-db-subnet-${count.index + 1}-${count.index % 2 == 0 ? "a" : "b"}"
   }
 }
 
@@ -48,13 +63,13 @@ resource "aws_route_table" "pub-rt" {
   }
 }
 
-resource "aws_route_table" "priv-rt" {
-  vpc_id = aws_vpc.vpc.id
+# resource "aws_route_table" "priv-rt" {
+#   vpc_id = aws_vpc.vpc.id
 
-  tags = {
-    Name = "${var.project_name}-private-subnets-rt"
-  }
-}
+#   tags = {
+#     Name = "${var.project_name}-private-subnets-rt"
+#   }
+# }
 
 resource "aws_route" "igw-route" {
   route_table_id         = aws_route_table.pub-rt.id
@@ -62,20 +77,26 @@ resource "aws_route" "igw-route" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
-resource "aws_route" "nat-route" {
-  route_table_id         = aws_route_table.priv-rt.id
-  gateway_id             = aws_nat_gateway.nat.id
-  destination_cidr_block = "0.0.0.0/0"
-}
+# resource "aws_route" "nat-route" {
+#   route_table_id         = aws_route_table.priv-rt.id
+#   gateway_id             = aws_nat_gateway.nat.id
+#   destination_cidr_block = "0.0.0.0/0"
+# }
 
 resource "aws_route_table_association" "public-rt" {
-  count          = 2
+  count          = var.subnet_count
   subnet_id      = aws_subnet.public-subnets[count.index].id
   route_table_id = aws_route_table.pub-rt.id
 }
 
 resource "aws_route_table_association" "private-rt" {
-  count          = 2
+  count          = var.subnet_count
   subnet_id      = aws_subnet.private-subnets[count.index].id
-  route_table_id = aws_route_table.priv-rt.id
+  route_table_id = aws_route_table.pub-rt.id # CHANGE TO priv-rt.id AFTER TESTING
+}
+
+resource "aws_vpc_endpoint" "dynamo_endpoint" {
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${var.region}.dynamodb"
+  route_table_ids   = [aws_route_table.pub-rt.id] # CHANGE TO priv-rt.id AFTER TESTING
 }
