@@ -64,3 +64,23 @@ resource "aws_iam_role_policy" "flow_logs_policy" {
   role = aws_iam_role.flow_logs_role.id
   policy = data.aws_iam_policy_document.assume_log_policy.json
 }
+
+
+################### 2. The Bucket Policy (Required for ALB)
+resource "aws_s3_bucket_policy" "allow_alb_logging" {
+  bucket = aws_s3_bucket.alb_logs.id
+  policy = data.aws_iam_policy_document.allow_alb_logging.json
+}
+
+data "aws_iam_policy_document" "allow_alb_logging" {
+  statement {
+    principals {
+      type        = "Service"
+      identifiers = ["logdelivery.elasticloadbalancing.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.alb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"]
+  }
+}
+
+data "aws_caller_identity" "current" {}

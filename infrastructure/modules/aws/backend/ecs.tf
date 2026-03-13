@@ -74,7 +74,7 @@ resource "aws_ecs_service" "backend" {
 
 
   network_configuration {
-    assign_public_ip = false # False is default. If you want your service to be directly accessible over the internet via the public ip
+    assign_public_ip = true # False is the default. If you want your service to be directly accessible over the internet via the public ip use true.
     subnets          = var.subnet_ids[*]
     security_groups  = [var.ecs_sg_id]
   }

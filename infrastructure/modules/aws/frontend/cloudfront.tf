@@ -8,7 +8,7 @@ resource "aws_cloudfront_distribution" "frontend-cdn" {
 
   enabled             = true
   default_root_object = "index.html"
-  web_acl_id          = var.waf_arn
+  # web_acl_id          = var.waf_arn
 
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
