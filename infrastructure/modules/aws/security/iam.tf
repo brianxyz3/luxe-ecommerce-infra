@@ -74,12 +74,32 @@ data "aws_iam_policy_document" "allow_alb_logging" {
   statement {
     effect = "Allow"
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = ["arn:aws:iam::${data.aws_elb_service_account.main.id}:root"]
     }
     actions   = ["s3:PutObject"]
     resources = [
       "${aws_s3_bucket.infra_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+    ]
+    
+    condition {
+      test = "StringEquals"
+      variable = "aws:SourceAccount"
+      values = [ data.aws_caller_identity.current.account_id ]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "allow_s3_logging" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["logging.s3.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = [
+      "${aws_s3_bucket.infra_logs.arn}/*"
     ]
     
     condition {

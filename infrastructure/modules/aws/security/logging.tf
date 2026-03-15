@@ -13,6 +13,11 @@ resource "aws_s3_bucket_policy" "allow_alb_logging" {
   policy = data.aws_iam_policy_document.allow_alb_logging.json
 }
 
+resource "aws_s3_bucket_policy" "allow_s3_logging" {
+  bucket = aws_s3_bucket.infra_logs.id
+  policy = data.aws_iam_policy_document.allow_s3_logging.json
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "name" {
   bucket = aws_s3_bucket.infra_logs.id
 

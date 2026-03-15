@@ -42,3 +42,15 @@ resource "aws_s3_bucket_policy" "frontend" {
     ]
   })
 }
+
+resource "aws_s3_bucket_logging" "name" {
+  bucket = aws_s3_bucket.frontend.bucket
+
+  target_bucket = var.logs_bucket
+  target_prefix = "log/s3/frontend/"
+  target_object_key_format {
+    partitioned_prefix {
+      partition_date_source = "EventTime"
+    }
+  }
+}

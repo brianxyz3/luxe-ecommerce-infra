@@ -112,6 +112,7 @@ resource "aws_vpc_endpoint" "dynamo_endpoint" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
           "dynamodb:Query",
           "dynamodb:Scan"
         ]

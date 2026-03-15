@@ -7,6 +7,7 @@ module "aws_frontend" {
   env                              = var.environment
   waf_arn                          = module.aws_security[0].cloudfront_waf_arn
   logs_bucket_regional_domain_name = module.aws_security[0].log_bucket_regional_name
+  logs_bucket                      = module.aws_security[0].log_bucket
 }
 
 module "aws_backend" {
