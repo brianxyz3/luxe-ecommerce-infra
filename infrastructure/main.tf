@@ -3,9 +3,9 @@ module "aws_frontend" {
   # providers = { aws = aws.aws }
   count = var.cloud_provider == "aws" ? 1 : 0
 
-  project_name = var.project_name
-  env          = var.environment
-  waf_arn      = module.aws_security[0].cloudfront_waf_arn
+  project_name                     = var.project_name
+  env                              = var.environment
+  waf_arn                          = module.aws_security[0].cloudfront_waf_arn
   logs_bucket_regional_domain_name = module.aws_security[0].log_bucket_regional_name
 }
 
@@ -30,7 +30,7 @@ module "aws_backend" {
 
 module "aws_db" {
   source = "./modules/aws/storage"
-  count = var.cloud_provider == "aws" ? 1 : 0
+  count  = var.cloud_provider == "aws" ? 1 : 0
 
   project_name = var.project_name
   subnet_ids   = module.aws_network[0].db_subnet_ids
@@ -47,7 +47,8 @@ module "aws_network" {
   alb_sg_id    = module.aws_security[0].alb_sg_id
   region       = var.aws_region
   ecs_services = var.backend-services
-  logs_bucket = module.aws_security[0].log_bucket
+  logs_bucket  = module.aws_security[0].log_bucket
+  dynamo_db_arn = module.aws_db[0].dynamo_db_arn
 }
 
 module "aws_security" {

@@ -40,13 +40,13 @@ variable "backend-services" {
     path = string
   }))
   default = {
-    gateway = { path = "/api/gateway/*" },
-    user    = { path = "/api/users/*" },
-    cart    = { path = "/api/cart/*" },
-    product = { path = "/api/products/*" },
-    order   = { path = "/api/orders/*" },
-    payment = { path = "/api/payments/*" },
-    inventory = { path = "/api/inventory/*" },
+    gateway      = { path = "/api/gateway/*" },
+    user         = { path = "/api/users/*" },
+    cart         = { path = "/api/cart/*" },
+    product      = { path = "/api/products/*" },
+    order        = { path = "/api/orders/*" },
+    payment      = { path = "/api/payments/*" },
+    inventory    = { path = "/api/inventory/*" },
     notification = { path = "/api/notifications/*" },
   }
 }
