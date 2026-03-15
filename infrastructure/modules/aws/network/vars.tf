@@ -2,6 +2,7 @@ variable "project_name" {}
 variable "env" {}
 variable "region" {}
 variable "alb_sg_id" {}
+variable "dynamo_db_arn" {}
 variable "logs_bucket" {}
 
 variable "subnet_count" {

@@ -99,4 +99,28 @@ resource "aws_vpc_endpoint" "dynamo_endpoint" {
   vpc_id            = aws_vpc.vpc.id
   service_name      = "com.amazonaws.${var.region}.dynamodb"
   route_table_ids   = [aws_route_table.pub-rt.id] # CHANGE TO priv-rt.id AFTER TESTING
+  # "Gateway" is the default vpc_endpoint_type in Terraform so no need to specify it here
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowAccessToLuxeDBTable"
+        Effect    = "Allow"
+        Principal = "*"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ]
+        Resource = [
+          var.dynamo_db_arn,
+          "${var.dynamo_db_arn}/index/*"
+        ]
+      }
+    ]
+  })
+
 }
