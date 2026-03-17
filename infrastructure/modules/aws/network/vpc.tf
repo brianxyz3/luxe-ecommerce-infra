@@ -125,3 +125,10 @@ resource "aws_vpc_endpoint" "dynamo_endpoint" {
   })
 
 }
+
+resource "aws_vpc_endpoint" "jdbc_endpoint" {
+  count = var.subnet_count
+  vpc_id = aws_vpc.vpc.id
+  service_name = "com.amazonaws.${var.region}.s3"
+  subnet_ids = [ aws_subnet.db-subnets[count.index].id ]
+}
