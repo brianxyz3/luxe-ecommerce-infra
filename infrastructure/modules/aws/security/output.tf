@@ -10,6 +10,10 @@ output "rds_sg_id" {
   value = aws_security_group.rds_sg.id
 }
 
+output "glue_rds_jdbc_sg_id" {
+  value = aws_security_group.rds_jdbc_sg.id
+}
+
 output "exec_role_arn" {
   value = aws_iam_role.ecs-exec-role.arn
 }
