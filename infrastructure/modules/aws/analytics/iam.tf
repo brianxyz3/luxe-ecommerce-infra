@@ -109,15 +109,30 @@ resource "aws_iam_role_policy" "firehose_s3_access" {
       {
         Effect = "Allow"
         Action  = [
-          "s3:PutObject",
+          "s3:AbortMultipartUpload",
+          "s3:GetBucketLocation",
           "s3:GetObject",
+          "s3:ListBucket",
+          "s3:PutObject",
+          "s3:PutObjectAcl"
         ]
         Resource = [
+          aws_s3_bucket.target_bucket.arn,
           "${aws_s3_bucket.target_bucket.arn}/clicks/*"
         ]
       },
       {
+        Effect = "Allow"
         Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Action = [
+          "glue:GetDatabase",
           "glue:GetTable",
           "glue:GetTableVersion",
           "glue:GetTableVersions"

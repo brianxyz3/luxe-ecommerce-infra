@@ -48,8 +48,8 @@ resource "aws_glue_connection" "rds_connection" {
   connection_type = "JDBC"
 
   connection_properties = {
-    JDBC_CONNECTION_URL      = "jdbc:postgresql://${var.rds_endpoint}}/${var.rds_db_name}"
-    JDBC_ENCRYPTED_PASSWORD = "PASSWORD"
+    JDBC_CONNECTION_URL      = "jdbc:postgresql://${var.rds_endpoint}/${var.rds_db_name}"
+    JDBC_ENCRYPTED_PASSWORD = "PASSWORD" # TODO: replace with a secure secret from Secrets Manager
     JDBC_USER_NAME          = "admin"
   }
 

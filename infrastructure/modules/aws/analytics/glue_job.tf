@@ -11,7 +11,7 @@ resource "aws_glue_job" "dynamo_to_s3_etl" {
 
   command {
     name            = "pythonshell"
-    script_location = "s3://${aws_s3_bucket.target_bucket.bucket}/jobs/etl_job.py" # Change thie bucket name
+    script_location = "s3://${aws_s3_bucket.target_bucket.bucket}/jobs/etl_job.py" # Change this bucket name
     python_version  = "3.9"
   }
 
