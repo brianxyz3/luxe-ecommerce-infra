@@ -71,6 +71,14 @@ resource "aws_route_table" "pub-rt" {
 #   }
 # }
 
+resource "aws_route_table" "db-rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.project_name}-db-subnets-rt"
+  }
+}
+
 resource "aws_route" "igw-route" {
   route_table_id         = aws_route_table.pub-rt.id
   gateway_id             = aws_internet_gateway.igw.id
@@ -126,9 +134,10 @@ resource "aws_vpc_endpoint" "dynamo_endpoint" {
 
 }
 
-resource "aws_vpc_endpoint" "jdbc_endpoint" {
-  count = var.subnet_count
-  vpc_id = aws_vpc.vpc.id
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id       = aws_vpc.vpc.id
   service_name = "com.amazonaws.${var.region}.s3"
-  subnet_ids = [ aws_subnet.db-subnets[count.index].id ]
+  route_table_ids = [
+    aws_route_table.db-rt.id
+  ]
 }

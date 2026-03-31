@@ -14,9 +14,4 @@ resource "aws_dynamodb_table" "dynamo_db" {
     attribute_name = "TimeToExist"
     enabled = true
   }
-
-  replica {
-    region_name = "eu-east-1"
-    consistency_mode = "EVENTUAL"
-  }
 }
