@@ -3,9 +3,11 @@ module "aws_frontend" {
   # providers = { aws = aws.aws }
   count = var.cloud_provider == "aws" ? 1 : 0
 
-  project_name = var.project_name
-  env          = var.environment
-  waf_arn      = module.aws_security[0].cloudfront_waf_arn
+  project_name                     = var.project_name
+  env                              = var.environment
+  waf_arn                          = module.aws_security[0].cloudfront_waf_arn
+  logs_bucket_regional_domain_name = module.aws_security[0].log_bucket_regional_name
+  logs_bucket                      = module.aws_security[0].log_bucket
 }
 
 module "aws_backend" {
@@ -27,16 +29,27 @@ module "aws_backend" {
   depends_on = [module.aws_network]
 }
 
+module "aws_db" {
+  source = "./modules/aws/database"
+  count  = var.cloud_provider == "aws" ? 1 : 0
+
+  project_name = var.project_name
+  subnet_ids   = module.aws_network[0].db_subnet_ids
+  rds_sg_id    = module.aws_security[0].rds_sg_id
+}
+
 module "aws_network" {
   source = "./modules/aws/network"
   # providers = { aws = aws.aws }
   count = var.cloud_provider == "aws" ? 1 : 0
 
-  project_name = var.project_name
-  env          = var.environment
-  alb_sg_id    = module.aws_security[0].alb_sg_id
-  region       = var.aws_region
-  ecs_services = var.backend-services
+  project_name  = var.project_name
+  env           = var.environment
+  alb_sg_id     = module.aws_security[0].alb_sg_id
+  region        = var.aws_region
+  ecs_services  = var.backend-services
+  logs_bucket   = module.aws_security[0].log_bucket
+  dynamo_db_arn = module.aws_db[0].dynamo_db_arn
 }
 
 module "aws_security" {
@@ -47,5 +60,24 @@ module "aws_security" {
   project_name = var.project_name
   vpc_id       = module.aws_network[0].vpc_id
   region       = var.aws_region
+  env          = var.environment
   alb_arn      = module.aws_network[0].alb_arn
+}
+
+module "aws_analytics" {
+  source = "./modules/aws/analytics"
+  # providers = { aws = aws.aws }
+  count = var.cloud_provider == "aws" ? 1 : 0
+
+
+  project_name   = var.project_name
+  env            = var.environment
+  region         = var.aws_region
+  subnet_ids     = module.aws_network[0].db_subnet_ids
+  vpc_id         = module.aws_network[0].vpc_id
+  sec_grp_id     = module.aws_security[0].glue_rds_jdbc_sg_id
+  rds_db_az      = module.aws_db[0].rds_db_az
+  rds_endpoint   = module.aws_db[0].rds_endpoint
+  rds_db_name    = module.aws_db[0].rds_db_name
+  dynamo_db_name = module.aws_db[0].dynamo_db_name
 }

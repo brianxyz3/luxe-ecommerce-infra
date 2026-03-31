@@ -12,6 +12,10 @@ output "priv_subnet_ids" {
   value = aws_subnet.private-subnets[*].id
 }
 
+output "db_subnet_ids" {
+  value = aws_subnet.db-subnets[*].id
+}
+
 output "alb_arn" {
   value = aws_alb.alb.arn
 }
