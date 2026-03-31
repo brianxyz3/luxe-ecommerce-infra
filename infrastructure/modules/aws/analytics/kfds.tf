@@ -65,6 +65,14 @@ resource "aws_lambda_function" "lambda_processor" {
   filename      = "lambda.zip"
   function_name = "firehose_clickstream_transformer"
   role          = aws_iam_role.lambda_role.arn
-  handler       = "exports.handler"
+  handler       = "firehose_clickstream_transformer.lambda_handler"
   runtime       = "python3.11"
+}
+
+resource "aws_lambda_permission" "allow_firehose_invoke" {
+  statement_id  = "AllowExecutionFromKinesisFirehose"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_processor.function_name
+  principal     = "firehose.amazonaws.com"
+  source_arn    = aws_kinesis_firehose_delivery_stream.extended_s3_stream.arn
 }
