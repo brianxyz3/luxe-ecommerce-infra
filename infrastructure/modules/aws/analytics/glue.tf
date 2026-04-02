@@ -1,5 +1,5 @@
 resource "aws_glue_catalog_database" "glue_db" {
-  name = "${var.project_name}_glue_db"
+  name        = "${var.project_name}_glue_db"
   description = "Glue catalog database for ${var.project_name} project"
 
   create_table_default_permission {
@@ -37,7 +37,7 @@ resource "aws_glue_trigger" "dynamo_db_crawler_trigger" {
   predicate {
     conditions {
       job_name = aws_glue_job.dynamo_to_s3_etl.name
-      state = "SUCCEEDED"
+      state    = "SUCCEEDED"
     }
   }
 }
@@ -48,18 +48,19 @@ resource "aws_glue_connection" "rds_connection" {
   connection_type = "JDBC"
 
   connection_properties = {
-    JDBC_CONNECTION_URL      = "jdbc:postgresql://${var.rds_endpoint}/${var.rds_db_name}"
-    JDBC_ENCRYPTED_PASSWORD = "PASSWORD" # TODO: replace with a secure secret from Secrets Manager
-    JDBC_USER_NAME          = "admin"
+    JDBC_CONNECTION_URL = "jdbc:postgresql://endpoint:5432/db_name"
+    PASSWORD            = "PASSWORD" # TODO: replace with a secure secret from Secrets Manager
+    USERNAME            = "admin"
   }
 
   physical_connection_requirements {
     subnet_id              = element(var.subnet_ids, 0)
     security_group_id_list = [var.sec_grp_id]
-    availability_zone      = var.rds_db_az
+    availability_zone      = var.rds_db_az # Change this
   }
-  
+
 }
+# JDBC_CONNECTION_URL      = "jdbc:postgresql://${data.aws_ssm_parameter.rds-endpoint.value}/${data.aws_ssm_parameter.rds-db-name}"
 
 resource "aws_glue_crawler" "rds_s3_db_crawler" {
   database_name = aws_glue_catalog_database.glue_db.name
@@ -67,7 +68,7 @@ resource "aws_glue_crawler" "rds_s3_db_crawler" {
   role          = aws_iam_role.glue_service_role.arn
 
   s3_target {
-    path            = "s3://${aws_s3_bucket.target_bucket.bucket}/rds/"
+    path = "s3://${aws_s3_bucket.target_bucket.bucket}/rds/"
   }
 
   # recrawl_policy {
@@ -91,7 +92,7 @@ resource "aws_glue_trigger" "rds_db_crawler_trigger" {
   predicate {
     conditions {
       job_name = aws_glue_job.rds_to_s3_etl.name
-      state = "SUCCEEDED"
+      state    = "SUCCEEDED"
     }
   }
 }

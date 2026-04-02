@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "glue_service_assume_role" {
 }
 
 resource "aws_iam_role" "glue_service_role" {
-  name = "glue-service-role"
+  name               = "glue-service-role"
   assume_role_policy = data.aws_iam_policy_document.glue_service_assume_role.json
 }
 
@@ -38,7 +38,8 @@ resource "aws_iam_role_policy" "glue_custom_policy" {
           "dynamodb:Scan"
         ]
         Resource = [
-          "arn:aws:dynamodb:*:*:table/${var.dynamo_db_name}"
+          # "arn:aws:dynamodb:*:*:table/${data.aws_ssm_parameter.dynamo-db-name.value}"
+          "arn:aws:dynamodb:*:*:table/"
         ]
       },
       {
@@ -62,8 +63,8 @@ resource "aws_iam_role_policy" "glue_s3_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:GetObject",
           "s3:GetBucketLocation",
@@ -71,8 +72,8 @@ resource "aws_iam_role_policy" "glue_s3_policy" {
         ]
 
         Resource = [
-            "${aws_s3_bucket.target_bucket.arn}/*",
-            "${aws_s3_bucket.target_bucket.arn}"
+          "${aws_s3_bucket.target_bucket.arn}/*",
+          "${aws_s3_bucket.target_bucket.arn}"
         ]
       }
     ]
@@ -108,7 +109,7 @@ resource "aws_iam_role_policy" "firehose_s3_access" {
     Statement = [
       {
         Effect = "Allow"
-        Action  = [
+        Action = [
           "s3:AbortMultipartUpload",
           "s3:GetBucketLocation",
           "s3:GetObject",
@@ -150,7 +151,7 @@ resource "aws_iam_role_policy" "firehose_s3_access" {
 }
 
 resource "aws_iam_role_policy_attachment" "firehose_kinesis_access" {
-  role = aws_iam_role.firehose_role.name
+  role       = aws_iam_role.firehose_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisReadOnlyAccess"
 }
 
@@ -162,7 +163,7 @@ resource "aws_iam_role_policy" "firehose_lambda_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action   = [
+        Action = [
           "lambda:InvokeFunction",
           "lambda:GetFunctionConfiguration"
         ]
@@ -192,6 +193,6 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "name" {
-  role = aws_iam_role.lambda_role.id
+  role       = aws_iam_role.lambda_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }

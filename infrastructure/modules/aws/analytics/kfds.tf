@@ -3,16 +3,16 @@ resource "aws_kinesis_firehose_delivery_stream" "extended_s3_stream" {
   destination = "extended_s3"
   kinesis_source_configuration {
     kinesis_stream_arn = aws_kinesis_stream.clicks_stream.arn
-    role_arn = aws_iam_role.firehose_role.arn
+    role_arn           = aws_iam_role.firehose_role.arn
   }
-  
+
 
   extended_s3_configuration {
     role_arn   = aws_iam_role.firehose_role.arn
     bucket_arn = aws_s3_bucket.target_bucket.arn
 
     buffering_interval = 60
-    buffering_size = 5
+    buffering_size     = 5
 
     prefix = "clicks/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/"
 
@@ -39,7 +39,7 @@ resource "aws_kinesis_firehose_delivery_stream" "extended_s3_stream" {
         role_arn      = aws_iam_role.firehose_role.arn
       }
     }
-    
+
 
     processing_configuration {
       enabled = "true"

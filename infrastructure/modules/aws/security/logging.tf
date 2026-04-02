@@ -1,16 +1,11 @@
 resource "aws_s3_bucket" "infra_logs" {
-  bucket = "${var.project_name}-${var.env}-logs"
+  bucket        = "${var.project_name}-${var.env}-logs"
   force_destroy = false
 
   tags = {
     Name        = "${var.project_name}-logs-bucket"
     Environment = var.env
   }
-}
-
-resource "aws_s3_bucket_policy" "allow_alb_logging" {
-  bucket = aws_s3_bucket.infra_logs.id
-  policy = data.aws_iam_policy_document.allow_alb_logging.json
 }
 
 resource "aws_s3_bucket_policy" "allow_s3_logging" {
@@ -26,12 +21,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "name" {
 
     status = "Enabled"
     transition {
-      days = 30
+      days          = 30
       storage_class = "STANDARD_IA"
     }
 
     transition {
-      days = 180
+      days          = 180
       storage_class = "GLACIER"
     }
 

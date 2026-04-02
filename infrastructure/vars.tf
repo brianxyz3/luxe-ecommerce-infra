@@ -11,7 +11,7 @@ variable "cloud_provider" {
 
 variable "project_name" {
   type        = string
-  default     = "luxe-ecommerce"
+  default     = "luxe-analytics"
   description = "Project name for resource naming"
 }
 
@@ -33,20 +33,4 @@ variable "environment" {
   type        = string
   default     = "prod"
   description = "Environment name"
-}
-
-variable "backend-services" {
-  type = map(object({
-    path = string
-  }))
-  default = {
-    gateway      = { path = "/api/gateway/*" },
-    user         = { path = "/api/users/*" },
-    cart         = { path = "/api/cart/*" },
-    product      = { path = "/api/products/*" },
-    order        = { path = "/api/orders/*" },
-    payment      = { path = "/api/payments/*" },
-    inventory    = { path = "/api/inventory/*" },
-    notification = { path = "/api/notifications/*" },
-  }
 }
