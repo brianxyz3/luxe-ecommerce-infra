@@ -29,17 +29,12 @@ resource "aws_route_table" "priv-rt" {
   }
 }
 
-# data "aws_ssm_parameter" "peer-vpc-id" {
-#   name = "/luxe-ecommerce/prod/network/vpc/id"
-# }
-
-# data "aws_ssm_parameter" "peer-vpc-cidr" {
-#   name = "/luxe-ecommerce/prod/network/vpc/cidr"
-# }
-
 resource "aws_vpc_peering_connection" "app_vpc_peer" {
   vpc_id = aws_vpc.vpc.id
   # peer_vpc_id = data.aws_ssm_parameter.peer-vpc-id.value
+  peer_region = var.region
+  auto_accept = false
+
   requester {
     allow_remote_vpc_dns_resolution = true
   }
@@ -47,6 +42,11 @@ resource "aws_vpc_peering_connection" "app_vpc_peer" {
     allow_remote_vpc_dns_resolution = true
   }
   peer_vpc_id = "99"
+
+  tags = {
+    Name = "VPC Peering between luxe-ecormmerce-app and ${var.project_name} vpcs"
+    Side = "Requester"
+  }
 }
 
 resource "aws_route" "vpc-peer-route" {

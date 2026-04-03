@@ -34,13 +34,10 @@ data "aws_iam_policy_document" "assume_log_policy" {
   }
 }
 
-
 resource "aws_iam_role_policy" "flow_logs_policy" {
   role   = aws_iam_role.flow_logs_role.id
   policy = data.aws_iam_policy_document.assume_log_policy.json
 }
-
-data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "allow_s3_logging" {
   statement {
