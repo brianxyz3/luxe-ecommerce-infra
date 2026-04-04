@@ -6,7 +6,7 @@ variable "dynamo_db_arn" {}
 variable "logs_bucket" {}
 
 variable "subnet_count" {
-  type = number
+  type    = number
   default = 2
 }
 

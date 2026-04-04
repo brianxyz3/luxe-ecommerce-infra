@@ -23,7 +23,7 @@ module "aws_backend" {
   ecs_sg_id      = module.aws_security[0].ecs_sg_id
   tg_arn         = module.aws_network[0].tg_arn
   exec_role      = module.aws_security[0].exec_role_arn
-  ecs_services   = var.backend-services
+  ecs_services   = var.backend_services
   region         = var.aws_region
 
   depends_on = [module.aws_network]
@@ -36,6 +36,7 @@ module "aws_db" {
   project_name = var.project_name
   subnet_ids   = module.aws_network[0].db_subnet_ids
   rds_sg_id    = module.aws_security[0].rds_sg_id
+  env          = var.aws_region
 }
 
 module "aws_network" {
@@ -47,7 +48,7 @@ module "aws_network" {
   env           = var.environment
   alb_sg_id     = module.aws_security[0].alb_sg_id
   region        = var.aws_region
-  ecs_services  = var.backend-services
+  ecs_services  = var.backend_services
   logs_bucket   = module.aws_security[0].log_bucket
   dynamo_db_arn = module.aws_db[0].dynamo_db_arn
 }
@@ -62,22 +63,4 @@ module "aws_security" {
   region       = var.aws_region
   env          = var.environment
   alb_arn      = module.aws_network[0].alb_arn
-}
-
-module "aws_analytics" {
-  source = "./modules/aws/analytics"
-  # providers = { aws = aws.aws }
-  count = var.cloud_provider == "aws" ? 1 : 0
-
-
-  project_name   = var.project_name
-  env            = var.environment
-  region         = var.aws_region
-  subnet_ids     = module.aws_network[0].db_subnet_ids
-  vpc_id         = module.aws_network[0].vpc_id
-  sec_grp_id     = module.aws_security[0].glue_rds_jdbc_sg_id
-  rds_db_az      = module.aws_db[0].rds_db_az
-  rds_endpoint   = module.aws_db[0].rds_endpoint
-  rds_db_name    = module.aws_db[0].rds_db_name
-  dynamo_db_name = module.aws_db[0].dynamo_db_name
 }

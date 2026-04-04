@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "infra_logs" {
-  bucket = "${var.project_name}-${var.env}-logs"
+  bucket        = "${var.project_name}-${var.env}-logs"
   force_destroy = false
 
   tags = {
@@ -26,12 +26,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "name" {
 
     status = "Enabled"
     transition {
-      days = 30
+      days          = 30
       storage_class = "STANDARD_IA"
     }
 
     transition {
-      days = 180
+      days          = 180
       storage_class = "GLACIER"
     }
 

@@ -34,7 +34,7 @@ resource "aws_subnet" "private-subnets" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.10.${count.index + 10}.0/24"
   availability_zone = "${var.region}${count.index % 2 == 0 ? "a" : "b"}"
-  
+
   map_public_ip_on_launch = true # DELETE AFTER TESTING
 
 
@@ -48,7 +48,7 @@ resource "aws_subnet" "db-subnets" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.10.${count.index + 20}.0/24"
   availability_zone = "${var.region}${count.index % 2 == 0 ? "a" : "b"}"
-  
+
 
   tags = {
     Name = "${var.project_name}-db-subnet-${count.index + 1}-${count.index % 2 == 0 ? "a" : "b"}"
@@ -104,9 +104,9 @@ resource "aws_route_table_association" "private-rt" {
 }
 
 resource "aws_vpc_endpoint" "dynamo_endpoint" {
-  vpc_id            = aws_vpc.vpc.id
-  service_name      = "com.amazonaws.${var.region}.dynamodb"
-  route_table_ids   = [aws_route_table.pub-rt.id] # CHANGE TO priv-rt.id AFTER TESTING
+  vpc_id          = aws_vpc.vpc.id
+  service_name    = "com.amazonaws.${var.region}.dynamodb"
+  route_table_ids = [aws_route_table.pub-rt.id] # CHANGE TO priv-rt.id AFTER TESTING
   # "Gateway" is the default vpc_endpoint_type in Terraform so no need to specify it here
 
   policy = jsonencode({
@@ -134,10 +134,24 @@ resource "aws_vpc_endpoint" "dynamo_endpoint" {
 
 }
 
-resource "aws_vpc_endpoint" "s3_endpoint" {
-  vpc_id       = aws_vpc.vpc.id
-  service_name = "com.amazonaws.${var.region}.s3"
-  route_table_ids = [
-    aws_route_table.db-rt.id
-  ]
+# resource "aws_vpc_peering_connection_accepter" "peer-accepter" {
+#   region                    = var.region
+#   vpc_peering_connection_id = data.aws_ssm_parameter.peer_id.value
+#   auto_accept               = true
+
+#   tags = {
+#     Side = "Accepter"
+#   }
+# }
+
+resource "aws_ssm_parameter" "vpc_id" {
+  name = "/${var.project_name}/${var.env}/network/vpc/core_vpc_id"
+  type = "String"
+  value = aws_vpc.vpc.id
+}
+
+resource "aws_ssm_parameter" "vpc_cdir" {
+  name = "/${var.project_name}/${var.env}/network/vpc/core_vpc_cidr"
+  type = "String"
+  value = aws_vpc.vpc.cidr_block
 }

@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "assume_log_role" {
 }
 
 resource "aws_iam_role" "flow_logs_role" {
-  name = "${var.project_name}-${var.env}-vpcFlowRole"
+  name               = "${var.project_name}-${var.env}-vpcFlowRole"
   assume_role_policy = data.aws_iam_policy_document.assume_log_role.json
 }
 
@@ -54,14 +54,14 @@ data "aws_iam_policy_document" "assume_log_policy" {
       "logs:DescribeLogStreams"
     ]
 
-    effect   = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
 }
 
 
 resource "aws_iam_role_policy" "flow_logs_policy" {
-  role = aws_iam_role.flow_logs_role.id
+  role   = aws_iam_role.flow_logs_role.id
   policy = data.aws_iam_policy_document.assume_log_policy.json
 }
 
@@ -77,15 +77,15 @@ data "aws_iam_policy_document" "allow_alb_logging" {
       type        = "AWS"
       identifiers = ["arn:aws:iam::${data.aws_elb_service_account.main.id}:root"]
     }
-    actions   = ["s3:PutObject"]
+    actions = ["s3:PutObject"]
     resources = [
       "${aws_s3_bucket.infra_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
     ]
-    
+
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "aws:SourceAccount"
-      values = [ data.aws_caller_identity.current.account_id ]
+      values   = [data.aws_caller_identity.current.account_id]
     }
   }
 }
@@ -97,15 +97,15 @@ data "aws_iam_policy_document" "allow_s3_logging" {
       type        = "Service"
       identifiers = ["logging.s3.amazonaws.com"]
     }
-    actions   = ["s3:PutObject"]
+    actions = ["s3:PutObject"]
     resources = [
       "${aws_s3_bucket.infra_logs.arn}/*"
     ]
-    
+
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "aws:SourceAccount"
-      values = [ data.aws_caller_identity.current.account_id ]
+      values   = [data.aws_caller_identity.current.account_id]
     }
   }
 }
