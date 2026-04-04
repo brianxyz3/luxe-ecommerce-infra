@@ -19,7 +19,7 @@ resource "aws_security_group" "jdbc_sg" {
 }
 
 resource "aws_ssm_parameter" "rds_jdbc_sg_id" {
-  name  = "/${var.project_name}/${var.env}/security/jdbc-sg-id"
+  name  = "/${var.project_name}/${var.env}/security/jdbc_sg_id"
   type  = "String"
   value = aws_security_group.jdbc_sg.id
 }

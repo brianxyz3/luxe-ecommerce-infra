@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 # GLUE RELATED IAM
 data "aws_iam_policy_document" "glue_service_assume_role" {
   statement {
@@ -38,8 +36,8 @@ resource "aws_iam_role_policy" "glue_custom_policy" {
           "dynamodb:Scan"
         ]
         Resource = [
-          # "arn:aws:dynamodb:*:*:table/${data.aws_ssm_parameter.dynamo-db-name.value}"
-          "arn:aws:dynamodb:*:*:table/"
+          # "arn:aws:dynamodb:*:*:table/${data.aws_ssm_parameter.dynamo_db_name.value}"
+          "arn:aws:dynamodb:*:*:table/" ###REMOVE THIS
         ]
       },
       {
@@ -49,6 +47,16 @@ resource "aws_iam_role_policy" "glue_custom_policy" {
           "ec2:DescribeNetworkInterfaces",
           "ec2:DeleteNetworkInterface"
         ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        # Resource = [
+        #   data.aws_ssm_parameter.rds_secret_arn.value
+        # ]
         Resource = "*"
       }
     ]
