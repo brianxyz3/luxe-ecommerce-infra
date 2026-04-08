@@ -8,9 +8,9 @@ resource "aws_db_instance" "rds_db" {
   engine_version                      = "17.6"
   instance_class                      = "db.t4g.micro"
   identifier                          = "${var.project_name}-rds-db-instance"
-  db_name                             = "${var.project_name}-rds-db"
-  username                            = "admin"
-  manage_master_user_password = true
+  db_name                             = "luxedb"
+  username                            = "luxeadmin"
+  manage_master_user_password         = true
   allocated_storage                   = 20
   storage_type                        = "gp3"
   db_subnet_group_name                = aws_db_subnet_group.rds_subnet_group.name
@@ -20,7 +20,8 @@ resource "aws_db_instance" "rds_db" {
   max_allocated_storage               = 100
   multi_az                            = false
   publicly_accessible                 = false
-  backup_retention_period = 7
+  skip_final_snapshot                 = true
+  backup_retention_period             = 7
   blue_green_update {
     enabled = true
   }
@@ -46,8 +47,8 @@ resource "aws_ssm_parameter" "rds_db_name" {
   value = aws_db_instance.rds_db.db_name
 }
 
-resource "aws_ssm_parameter" "rds_db_secret_id" {
-  name = "/${var.project_name}/${var.env}/database/rds_db_secret_id"
+resource "aws_ssm_parameter" "rds_db_secret_arn" {
+  name  = "/${var.project_name}/${var.env}/database/rds_db_secret_arn"
   type  = "SecureString"
   value = aws_db_instance.rds_db.master_user_secret[0].secret_arn
 }

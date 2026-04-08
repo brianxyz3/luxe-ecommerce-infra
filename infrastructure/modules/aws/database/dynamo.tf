@@ -16,8 +16,8 @@ resource "aws_dynamodb_table" "dynamo_db" {
   }
 }
 
-resource "aws_ssm_parameter" "db-name" {
-  name  = "/${var.project_name}/${var.env}/database/name"
+resource "aws_ssm_parameter" "dynamo_db_name" {
+  name  = "/${var.project_name}/${var.env}/database/dynamo_db_name"
   type  = "String"
   value = aws_db_instance.rds_db.db_name
 }
