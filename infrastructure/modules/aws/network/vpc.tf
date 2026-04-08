@@ -64,7 +64,7 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   ]
 }
 resource "aws_ssm_parameter" "vpc_peer_id" {
-  name = "/${var.project_name}/network/vpc/analyticsxcore_vpc_peer_id"
-  type = "String"
+  name  = "/${var.project_name}/${var.env}/network/vpc/analyticsxcore_vpc_peer_id"
+  type  = "String"
   value = aws_vpc_peering_connection.app_vpc_peer.id
 }
