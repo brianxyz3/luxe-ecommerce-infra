@@ -8,6 +8,12 @@ resource "aws_s3_bucket" "infra_logs" {
   }
 }
 
+resource "aws_ssm_parameter" "infra_logs" {
+  name = "/${var.project_name}/${var.env}/security/log_bucket_arn"
+  type = "String"
+  value = aws_s3_bucket.infra_logs.arn
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "name" {
   bucket = aws_s3_bucket.infra_logs.id
 
