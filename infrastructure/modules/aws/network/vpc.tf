@@ -145,13 +145,13 @@ resource "aws_vpc_endpoint" "dynamo_endpoint" {
 # }
 
 resource "aws_ssm_parameter" "vpc_id" {
-  name = "/${var.project_name}/${var.env}/network/vpc/core_vpc_id"
-  type = "String"
+  name  = "/${var.project_name}/${var.env}/network/vpc/core_vpc_id"
+  type  = "String"
   value = aws_vpc.vpc.id
 }
 
 resource "aws_ssm_parameter" "vpc_cdir" {
-  name = "/${var.project_name}/${var.env}/network/vpc/core_vpc_cidr"
-  type = "String"
+  name  = "/${var.project_name}/${var.env}/network/vpc/core_vpc_cidr"
+  type  = "String"
   value = aws_vpc.vpc.cidr_block
 }
