@@ -23,52 +23,7 @@ resource "aws_iam_role_policy_attachment" "attach-exec-perm" {
 }
 
 
-# VPC Flow Log Role and Policy
-data "aws_iam_policy_document" "assume_log_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["vpc-flow-logs.amazonaws.com"]
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
-}
-
-resource "aws_iam_role" "flow_logs_role" {
-  name               = "${var.project_name}-${var.env}-vpcFlowRole"
-  assume_role_policy = data.aws_iam_policy_document.assume_log_role.json
-}
-
-data "aws_iam_policy_document" "assume_log_policy" {
-  statement {
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:CreateLogDelivery",
-      "logs:DeleteLogDelivery",
-      "logs:DescribeLogGroups",
-      "logs:DescribeLogStreams"
-    ]
-
-    effect    = "Allow"
-    resources = ["*"]
-  }
-}
-
-
-resource "aws_iam_role_policy" "flow_logs_policy" {
-  role   = aws_iam_role.flow_logs_role.id
-  policy = data.aws_iam_policy_document.assume_log_policy.json
-}
-
-
-data "aws_elb_service_account" "main" {}
-
-data "aws_caller_identity" "current" {}
+# VPC Flow Log S3 Bucket Policies
 
 data "aws_iam_policy_document" "allow_alb_logging" {
   statement {
@@ -90,6 +45,11 @@ data "aws_iam_policy_document" "allow_alb_logging" {
   }
 }
 
+resource "aws_s3_bucket_policy" "allow_alb_logging" {
+  bucket = aws_s3_bucket.infra_logs.id
+  policy = data.aws_iam_policy_document.allow_alb_logging.json
+}
+
 data "aws_iam_policy_document" "allow_s3_logging" {
   statement {
     effect = "Allow"
@@ -108,4 +68,41 @@ data "aws_iam_policy_document" "allow_s3_logging" {
       values   = [data.aws_caller_identity.current.account_id]
     }
   }
+}
+
+resource "aws_s3_bucket_policy" "allow_s3_logging" {
+  bucket = aws_s3_bucket.infra_logs.id
+  policy = data.aws_iam_policy_document.allow_s3_logging.json
+}
+
+resource "aws_s3_bucket_policy" "allow_flow_logs" {
+  bucket = aws_s3_bucket.infra_logs.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AWSLogDeliveryWrite"
+        Effect = "Allow"
+        Principal = {
+          Service = "delivery.logs.amazonaws.com"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.infra_logs.arn}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl" = "bucket-owner-full-control"
+          }
+        }
+      },
+      {
+        Sid    = "AWSLogDeliveryAclCheck"
+        Effect = "Allow"
+        Principal = {
+          Service = "delivery.logs.amazonaws.com"
+        }
+        Action   = "s3:GetBucketAcl"
+        Resource = aws_s3_bucket.infra_logs.arn
+      }
+    ]
+  })
 }
