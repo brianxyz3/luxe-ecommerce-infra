@@ -75,6 +75,11 @@ resource "aws_s3_bucket_policy" "allow_s3_logging" {
   policy = data.aws_iam_policy_document.allow_s3_logging.json
 }
 
+resource "aws_s3_bucket_policy" "allow_s3_logging" {
+  bucket = aws_s3_bucket.infra_logs.id
+  policy = data.aws_iam_policy_document.allow_s3_logging.json
+}
+
 resource "aws_s3_bucket_policy" "allow_flow_logs" {
   bucket = aws_s3_bucket.infra_logs.id
   policy = jsonencode({
@@ -90,7 +95,13 @@ resource "aws_s3_bucket_policy" "allow_flow_logs" {
         Resource = "${aws_s3_bucket.infra_logs.arn}/*"
         Condition = {
           StringEquals = {
-            "s3:x-amz-acl" = "bucket-owner-full-control"
+            "s3:x-amz-acl" = "bucket-owner-full-control",
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          },
+          ArnLike = {
+            "aws:SourceArn": [
+              "arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:vpc-flow-log/fl-*"
+            ]
           }
         }
       },
@@ -102,6 +113,11 @@ resource "aws_s3_bucket_policy" "allow_flow_logs" {
         }
         Action   = "s3:GetBucketAcl"
         Resource = aws_s3_bucket.infra_logs.arn
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
       }
     ]
   })
