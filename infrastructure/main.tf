@@ -70,7 +70,7 @@ module "analytics_aws_network" {
   env          = var.environment
   region       = var.aws_region
 
-  depends_on = [ module.aws_network ]
+  depends_on = [module.aws_network]
 }
 
 module "analytics_aws_security" {
@@ -83,7 +83,7 @@ module "analytics_aws_security" {
   env          = var.environment
   # alb_arn      = module.aws_network[0].alb_arn
 
-  depends_on = [ module.aws_security ]
+  depends_on = [module.aws_security]
 }
 
 module "analytics_aws_analytics" {
@@ -97,7 +97,7 @@ module "analytics_aws_analytics" {
   subnet_id    = module.analytics_aws_network[0].priv_subnet_id
   vpc_id       = module.analytics_aws_network[0].vpc_id
   sec_grp_id   = module.analytics_aws_security[0].glue_jdbc_sg_id
-  priv_sub_az    = module.analytics_aws_network[0].priv_subnet_az
+  priv_sub_az  = module.analytics_aws_network[0].priv_subnet_az
 
-  depends_on = [ module.aws_network, module.aws_db ]
+  depends_on = [module.aws_network, module.aws_db]
 }

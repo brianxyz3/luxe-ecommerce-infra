@@ -12,12 +12,22 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
+  ci:
+    name: Check & Validate
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
+
+      - name: AWS Login (OIDC)
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Verify identity test
+        run: aws sts get-caller-identity
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -28,6 +38,32 @@ jobs:
         run: terraform fmt -check -recursive
         working-directory: infrastructure/
 
+      - name: Initialize Terraform
+        run: |
+          terraform init
+          terraform validate
+        working-directory: infrastructure/
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: infrastructure/
+
+      - name: Upload Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infrastructure/tfplan
+
+    
+  cd:
+    name: Terraform Apply
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
       - name: AWS Login (OIDC)
         uses: aws-actions/configure-aws-credentials@v5
         with:
@@ -36,20 +72,18 @@ jobs:
 
       - name: Verify identity test
         run: aws sts get-caller-identity
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Download Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: infrastructure/
         
-      - name: Initialize Terraform
-        run: terraform init
-        working-directory: infrastructure/
-
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: infrastructure/
-
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan
-        working-directory: infrastructure/
-
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve tfplan
+        run: |
+          terraform init
+          terraform apply -auto-approve tfplan
         working-directory: infrastructure/
