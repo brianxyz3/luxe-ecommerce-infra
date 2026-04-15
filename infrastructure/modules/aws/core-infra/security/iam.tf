@@ -90,11 +90,11 @@ resource "aws_s3_bucket_policy" "allow_flow_logs" {
         Resource = "${aws_s3_bucket.infra_logs.arn}/*"
         Condition = {
           StringEquals = {
-            "s3:x-amz-acl" = "bucket-owner-full-control",
+            "s3:x-amz-acl"      = "bucket-owner-full-control",
             "aws:SourceAccount" = data.aws_caller_identity.current.account_id
           },
           ArnLike = {
-            "aws:SourceArn": [
+            "aws:SourceArn" : [
               "arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:vpc-flow-log/fl-*"
             ]
           }

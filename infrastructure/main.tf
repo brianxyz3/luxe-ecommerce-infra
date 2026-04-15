@@ -1,5 +1,5 @@
 module "aws_frontend" {
-  source = "./modules/aws/frontend"
+  source = "./modules/aws/core-infra/frontend"
   count  = var.cloud_provider == "aws" ? 1 : 0
 
   project_name                     = var.project_name
@@ -10,7 +10,7 @@ module "aws_frontend" {
 }
 
 module "aws_backend" {
-  source = "./modules/aws/backend"
+  source = "./modules/aws/core-infra/backend"
   count  = var.cloud_provider == "aws" ? 1 : 0
 
   project_name   = var.project_name
@@ -28,7 +28,7 @@ module "aws_backend" {
 }
 
 module "aws_db" {
-  source = "./modules/aws/database"
+  source = "./modules/aws/core-infra/database"
   count  = var.cloud_provider == "aws" ? 1 : 0
 
   project_name = var.project_name
@@ -38,7 +38,7 @@ module "aws_db" {
 }
 
 module "aws_network" {
-  source = "./modules/aws/network"
+  source = "./modules/aws/core-infra/network"
   count  = var.cloud_provider == "aws" ? 1 : 0
 
   project_name  = var.project_name
@@ -51,7 +51,7 @@ module "aws_network" {
 }
 
 module "aws_security" {
-  source = "./modules/aws/security"
+  source = "./modules/aws/core-infra/security"
   count  = var.cloud_provider == "aws" ? 1 : 0
 
   project_name = var.project_name
