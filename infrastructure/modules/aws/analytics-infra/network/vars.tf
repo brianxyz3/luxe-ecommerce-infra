@@ -1,6 +1,8 @@
 variable "project_name" {}
 variable "env" {}
-variable "vpc_id" {}
 variable "region" {}
-# variable "alb_arn" {}
 
+variable "subnet_count" {
+  type    = number
+  default = 1
+}

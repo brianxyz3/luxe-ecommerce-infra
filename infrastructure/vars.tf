@@ -12,6 +12,12 @@ variable "cloud_provider" {
 variable "project_name" {
   type        = string
   default     = "luxe-ecommerce"
+  description = "Project name for resource naming and parameter fetching/storing"
+}
+
+variable "analytics_project_name" {
+  type        = string
+  default     = "luxe-analytics"
   description = "Project name for resource naming"
 }
 
