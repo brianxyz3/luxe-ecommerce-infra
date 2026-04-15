@@ -4,7 +4,7 @@ resource "aws_flow_log" "vpc_flow" {
   vpc_id               = var.vpc_id
   traffic_type         = "ALL"
   destination_options {
-    file_format = "parquet"
+    file_format        = "parquet"
     per_hour_partition = true
   }
 }

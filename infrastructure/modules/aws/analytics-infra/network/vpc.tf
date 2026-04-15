@@ -31,7 +31,7 @@ resource "aws_route_table" "priv_rt" {
 
 resource "aws_vpc_peering_connection" "app_vpc_peer" {
   vpc_id = aws_vpc.vpc.id
-  # peer_vpc_id = data.aws_ssm_parameter.peer_vpc_id.value
+  peer_vpc_id = data.aws_ssm_parameter.peer_vpc_id.value
   peer_region = var.region
   auto_accept = false
 
@@ -41,7 +41,6 @@ resource "aws_vpc_peering_connection" "app_vpc_peer" {
   accepter {
     allow_remote_vpc_dns_resolution = true
   }
-  peer_vpc_id = "99"
 
   tags = {
     Name = "VPC Peering between luxe-ecormmerce-app and ${var.project_name} vpcs"
@@ -52,8 +51,7 @@ resource "aws_vpc_peering_connection" "app_vpc_peer" {
 resource "aws_route" "vpc_peer_route" {
   route_table_id            = aws_route_table.priv_rt.id
   vpc_peering_connection_id = aws_vpc_peering_connection.app_vpc_peer.id
-  # destination_cidr_block = data.aws_ssm_parameter.peer_vpc_cidr.value
-  destination_cidr_block = "10.10.0.0/16"
+  destination_cidr_block = data.aws_ssm_parameter.peer_vpc_cidr.value
 }
 
 resource "aws_vpc_endpoint" "s3_endpoint" {

@@ -36,8 +36,7 @@ resource "aws_iam_role_policy" "glue_custom_policy" {
           "dynamodb:Scan"
         ]
         Resource = [
-          # "arn:aws:dynamodb:*:*:table/${data.aws_ssm_parameter.dynamo_db_name.value}"
-          "arn:aws:dynamodb:*:*:table/" ###REMOVE THIS
+          "arn:aws:dynamodb:*:*:table/${data.aws_ssm_parameter.dynamo_db_name.value}"
         ]
       },
       {
@@ -54,10 +53,9 @@ resource "aws_iam_role_policy" "glue_custom_policy" {
         Action = [
           "secretsmanager:GetSecretValue"
         ]
-        # Resource = [
-        #   data.aws_ssm_parameter.rds_secret_arn.value
-        # ]
-        Resource = "*"
+        Resource = [
+          data.aws_ssm_parameter.rds_secret_arn.value
+        ]
       }
     ]
   })

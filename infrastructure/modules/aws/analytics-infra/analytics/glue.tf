@@ -48,16 +48,15 @@ resource "aws_glue_connection" "rds_connection" {
   connection_type = "JDBC"
 
   connection_properties = {
-    JDBC_CONNECTION_URL = "jdbc:postgresql://endpoint:5432/db_name"
+    JDBC_CONNECTION_URL = "jdbc:postgresql://${data.aws_ssm_parameter.rds-endpoint.value}/${data.aws_ssm_parameter.rds-db-name}"
     USERNAME            = "admin"
-    # SECRET_ID = data.aws_ssm_parameter.rds_secret_arn.value
-    SECRET_ID = "pw"
+    SECRET_ID = data.aws_ssm_parameter.rds_secret_arn.value
   }
 
   physical_connection_requirements {
     subnet_id              = element(var.subnet_ids, 0)
     security_group_id_list = [var.sec_grp_id]
-    availability_zone      = var.rds_db_az # Change this
+    availability_zone      = var.priv_sub_az
   }
 
 }
@@ -138,7 +137,7 @@ resource "aws_glue_catalog_table" "clickstream_table" {
 
     }
 
-    # Define your columns exactly as they come out of the Lambda
+    # Defined columns exactly as they come out of the Lambda
     columns {
       name = "id"
       type = "string"
@@ -153,5 +152,4 @@ resource "aws_glue_catalog_table" "clickstream_table" {
     }
   }
 
-  # MSCK REPAIR TABLE clickstream_db.clickstream_data;  RUN AFTER DEPLOYMENT
 }
