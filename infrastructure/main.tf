@@ -34,7 +34,8 @@ module "aws_db" {
   project_name = var.project_name
   subnet_ids   = module.aws_network[0].db_subnet_ids
   rds_sg_id    = module.aws_security[0].rds_sg_id
-  env          = var.aws_region
+  region       = var.aws_region
+  env          = var.environment
 }
 
 module "aws_network" {
