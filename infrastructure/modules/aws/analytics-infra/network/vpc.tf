@@ -8,15 +8,14 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-resource "aws_subnet" "private_subnets" {
-  count             = var.subnet_count
+resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = "172.16.${count.index + 20}.0/24"
-  availability_zone = "${var.region}${count.index % 2 == 0 ? "a" : "b"}"
+  cidr_block        = "172.16.20.0/24"
+  availability_zone = "${var.region}a"
 
 
   tags = {
-    Name = "${var.project_name}-private-subnet-${count.index + 1}-${count.index % 2 == 0 ? "a" : "b"}"
+    Name = "${var.project_name}-private-subnet-1-a"
   }
 }
 
@@ -29,11 +28,15 @@ resource "aws_route_table" "priv_rt" {
   }
 }
 
+resource "aws_route_table_association" "priv_rt_assoc" {
+  route_table_id = aws_route_table.priv_rt.id
+  subnet_id = aws_subnet.private_subnet.id
+}
+
 resource "aws_vpc_peering_connection" "app_vpc_peer" {
   vpc_id = aws_vpc.vpc.id
   peer_vpc_id = data.aws_ssm_parameter.peer_vpc_id.value
-  peer_region = var.region
-  auto_accept = false
+  auto_accept = true
 
   requester {
     allow_remote_vpc_dns_resolution = true
@@ -61,6 +64,7 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
     aws_route_table.priv_rt.id
   ]
 }
+
 resource "aws_ssm_parameter" "vpc_peer_id" {
   name  = "/${var.project_name}/${var.env}/network/vpc/analyticsxcore_vpc_peer_id"
   type  = "String"
