@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "infra_logs" {
-  bucket = "${var.project_name}-${var.env}-logs"
+  bucket        = "${var.project_name}-${var.env}-logs"
   force_destroy = false
 
   tags = {
@@ -8,14 +8,10 @@ resource "aws_s3_bucket" "infra_logs" {
   }
 }
 
-resource "aws_s3_bucket_policy" "allow_alb_logging" {
-  bucket = aws_s3_bucket.infra_logs.id
-  policy = data.aws_iam_policy_document.allow_alb_logging.json
-}
-
-resource "aws_s3_bucket_policy" "allow_s3_logging" {
-  bucket = aws_s3_bucket.infra_logs.id
-  policy = data.aws_iam_policy_document.allow_s3_logging.json
+resource "aws_ssm_parameter" "infra_logs" {
+  name  = "/${var.project_name}/${var.env}/security/log_bucket_arn"
+  type  = "String"
+  value = aws_s3_bucket.infra_logs.arn
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "name" {
@@ -26,12 +22,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "name" {
 
     status = "Enabled"
     transition {
-      days = 30
+      days          = 30
       storage_class = "STANDARD_IA"
     }
 
     transition {
-      days = 180
+      days          = 180
       storage_class = "GLACIER"
     }
 
@@ -51,8 +47,10 @@ resource "aws_s3_bucket_versioning" "log_bucket_versioning" {
 resource "aws_flow_log" "vpc_flow" {
   log_destination      = aws_s3_bucket.infra_logs.arn
   log_destination_type = "s3"
-  iam_role_arn         = aws_iam_role.flow_logs_role.arn
   vpc_id               = var.vpc_id
   traffic_type         = "ALL"
-  depends_on           = [aws_iam_role_policy.flow_logs_policy]
+  destination_options {
+    file_format        = "parquet"
+    per_hour_partition = true
+  }
 }

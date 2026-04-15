@@ -9,7 +9,7 @@ resource "aws_alb" "alb" {
 
   access_logs {
     bucket  = var.logs_bucket
-    prefix  = "${var.project_name}/alb/"
+    prefix  = "${var.project_name}/alb"
     enabled = true
   }
 

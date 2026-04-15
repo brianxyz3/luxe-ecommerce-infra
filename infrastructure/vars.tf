@@ -15,6 +15,12 @@ variable "project_name" {
   description = "Project name for resource naming"
 }
 
+variable "analytics_project_name" {
+  type        = string
+  default     = "luxe-analytics"
+  description = "Project name for analytics parameter fetching"
+}
+
 variable "aws_region" {
   type        = string
   default     = "eu-west-1"
@@ -35,18 +41,18 @@ variable "environment" {
   description = "Environment name"
 }
 
-variable "backend-services" {
+variable "backend_services" {
   type = map(object({
     path = string
   }))
   default = {
-    gateway      = { path = "/api/gateway/*" },
-    user         = { path = "/api/users/*" },
-    cart         = { path = "/api/cart/*" },
-    product      = { path = "/api/products/*" },
-    order        = { path = "/api/orders/*" },
-    payment      = { path = "/api/payments/*" },
-    inventory    = { path = "/api/inventory/*" },
-    notification = { path = "/api/notifications/*" },
+    gateway = { path = "/api/gateway/*" },
+    user    = { path = "/api/users/*" },
+    cart    = { path = "/api/cart/*" },
+    product = { path = "/api/products/*" },
+    order   = { path = "/api/orders/*" },
+    # payment      = { path = "/api/payments/*" },
+    # inventory    = { path = "/api/inventory/*" },
+    # notification = { path = "/api/notifications/*" },
   }
 }
