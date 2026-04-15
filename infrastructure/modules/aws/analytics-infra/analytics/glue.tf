@@ -50,7 +50,7 @@ resource "aws_glue_connection" "rds_connection" {
   connection_properties = {
     JDBC_CONNECTION_URL = "jdbc:postgresql://${data.aws_ssm_parameter.rds_endpoint.value}/${data.aws_ssm_parameter.rds_db_name.value}"
     USERNAME            = "luxeadmin"
-    PASSWORD = data.aws_ssm_parameter.rds_secret_arn.value
+    PASSWORD            = data.aws_ssm_parameter.rds_secret_arn.value
   }
 
   physical_connection_requirements {
