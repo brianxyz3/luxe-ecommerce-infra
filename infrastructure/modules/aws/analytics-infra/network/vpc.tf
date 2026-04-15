@@ -30,11 +30,11 @@ resource "aws_route_table" "priv_rt" {
 
 resource "aws_route_table_association" "priv_rt_assoc" {
   route_table_id = aws_route_table.priv_rt.id
-  subnet_id = aws_subnet.private_subnet.id
+  subnet_id      = aws_subnet.private_subnet.id
 }
 
 resource "aws_vpc_peering_connection" "app_vpc_peer" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id      = aws_vpc.vpc.id
   peer_vpc_id = data.aws_ssm_parameter.peer_vpc_id.value
   auto_accept = true
 
@@ -54,7 +54,7 @@ resource "aws_vpc_peering_connection" "app_vpc_peer" {
 resource "aws_route" "vpc_peer_route" {
   route_table_id            = aws_route_table.priv_rt.id
   vpc_peering_connection_id = aws_vpc_peering_connection.app_vpc_peer.id
-  destination_cidr_block = data.aws_ssm_parameter.peer_vpc_cidr.value
+  destination_cidr_block    = data.aws_ssm_parameter.peer_vpc_cidr.value
 }
 
 resource "aws_vpc_endpoint" "s3_endpoint" {
