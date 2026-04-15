@@ -51,7 +51,7 @@ resource "aws_glue_trigger" "daily_dynamo_export_trigger" {
     arguments = {
       "--continuous-log-logGroup" = aws_cloudwatch_log_group.dynamo_to_s3_log_group.name
       "--target_bucket"           = "s3://${aws_s3_bucket.target_bucket.bucket}/data/"
-      "--dynamodb_table"      = "${data.aws_ssm_parameter.dynamo-db-name.value}"
+      "--dynamodb_table"      = "${data.aws_ssm_parameter.dynamo_db_name.value}"
     }
   }
 }
