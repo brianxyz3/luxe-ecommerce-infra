@@ -53,6 +53,7 @@ module "aws_network" {
 
 module "aws_security" {
   source = "./modules/aws/core-infra/security"
+  count  = var.cloud_provider == "aws" ? 1 : 0
 
   project_name = var.project_name
   vpc_id       = module.aws_network[0].vpc_id
@@ -68,6 +69,8 @@ module "analytics_aws_network" {
   project_name = var.project_name
   env          = var.environment
   region       = var.aws_region
+
+  depends_on = [ module.aws_network ]
 }
 
 module "analytics_aws_security" {
@@ -79,6 +82,8 @@ module "analytics_aws_security" {
   region       = var.aws_region
   env          = var.environment
   # alb_arn      = module.aws_network[0].alb_arn
+
+  depends_on = [ module.aws_security ]
 }
 
 module "analytics_aws_analytics" {
@@ -93,4 +98,6 @@ module "analytics_aws_analytics" {
   vpc_id       = module.analytics_aws_network[0].vpc_id
   sec_grp_id   = module.analytics_aws_security[0].glue_jdbc_sg_id
   priv_sub_az    = module.analytics_aws_network[0].priv_subnet_az
+
+  depends_on = [ module.aws_network, module.aws_db ]
 }
