@@ -6,7 +6,7 @@ resource "aws_security_group" "jdbc_sg" {
   ingress {
     from_port = 0
     to_port   = 0
-    protocol  = "tcp"
+    protocol  = "-1"
     self      = true
   }
 
