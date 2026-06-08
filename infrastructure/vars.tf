@@ -8,16 +8,9 @@ variable "cloud_provider" {
   }
 }
 
-
-variable "project_name" {
+variable "monitoring_project_name" {
   type        = string
-  default     = "luxe-ecommerce"
-  description = "Project name for resource naming and parameter fetching/storing"
-}
-
-variable "analytics_project_name" {
-  type        = string
-  default     = "luxe-analytics"
+  default     = "luxe-monitoring"
   description = "Project name for resource naming"
 }
 
@@ -28,31 +21,8 @@ variable "aws_region" {
 }
 
 
-variable "backend_container_port" {
-  type        = number
-  default     = 3000
-  description = "Port the backend container listens on"
-}
-
-
 variable "environment" {
   type        = string
   default     = "prod"
   description = "Environment name"
-}
-
-variable "backend_services" {
-  type = map(object({
-    path = string
-  }))
-  default = {
-    gateway = { path = "/api/gateway/*" },
-    user    = { path = "/api/users/*" },
-    cart    = { path = "/api/cart/*" },
-    product = { path = "/api/products/*" },
-    order   = { path = "/api/orders/*" },
-    # payment      = { path = "/api/payments/*" },
-    # inventory    = { path = "/api/inventory/*" },
-    # notification = { path = "/api/notifications/*" },
-  }
 }

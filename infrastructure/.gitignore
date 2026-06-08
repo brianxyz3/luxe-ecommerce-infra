@@ -38,3 +38,7 @@ terraform.rc
 
 # Ignore other branch README.md
 *.md
+
+# Ignore key pair
+*.pem
+*.pem.*
