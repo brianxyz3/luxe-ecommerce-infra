@@ -38,7 +38,7 @@ resource "aws_internet_gateway" "igw" {
 
 # resource "aws_vpc_peering_connection" "vpc_conn" {
 #   vpc_id = aws_vpc.vpc.id
-#   peer_vpc_id = data.aws_ssm_parameter.peer_vpc_id.value
+#   peer_vpc_id = data.aws_ssm_parameter.core_vpc_id.value
 #   auto_accept = true
 # }
 

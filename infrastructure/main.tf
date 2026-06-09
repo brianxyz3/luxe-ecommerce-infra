@@ -18,6 +18,8 @@ module "monitoring_aws_compute" {
   env           = var.environment
   subnet_id     = module.monitoring_aws_network[0].subnet_id
   grafana_sg_id = module.monitoring_aws_security[0].grafana_sg_id
+  prometheus_sg_id = module.monitoring_aws_security[0].prometheus_sg_id
+  loki_sg_id = module.monitoring_aws_security[0].loki_sg_id
 
   depends_on = [module.monitoring_aws_security]
 }
